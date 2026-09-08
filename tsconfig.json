@@ -1,0 +1,10 @@
+{
+  "//": "Nuxt fabrique un tsconfig par contexte dans .nuxt/ : l'application, le serveur, le code partage et les fichiers de configuration n'ont pas les memes globales disponibles. Ce fichier ne fait que les rassembler, pour que 'npm run verifier' verifie le projet entier d'un coup.",
+  "files": [],
+  "references": [
+    { "path": "./.nuxt/tsconfig.app.json" },
+    { "path": "./.nuxt/tsconfig.server.json" },
+    { "path": "./.nuxt/tsconfig.shared.json" },
+    { "path": "./.nuxt/tsconfig.node.json" }
+  ]
+}

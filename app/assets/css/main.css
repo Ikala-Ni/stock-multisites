@@ -1,0 +1,43 @@
+/* Tailwind 4 : une seule ligne d'import remplace les trois directives de la
+   version 3, et la configuration du theme se fait ici, dans le CSS. */
+@import 'tailwindcss';
+
+/* Les couleurs du projet, declarees comme variables de theme. Tailwind en
+   fabrique automatiquement les classes : --color-ardoise-600 donne
+   bg-ardoise-600, text-ardoise-600, border-ardoise-600.
+
+   Pourquoi des noms de couleur a nous plutot que le gris de Tailwind : le jour
+   ou la teinte change, elle change ici et nulle part ailleurs. C'est la meme
+   raison qui fait qu'on ne repete pas une valeur en dur dans trente fichiers. */
+@theme {
+  --color-ardoise-50: #f6f7f8;
+  --color-ardoise-100: #eceef1;
+  --color-ardoise-200: #d8dce2;
+  --color-ardoise-500: #6b7480;
+  --color-ardoise-700: #3b434e;
+  --color-ardoise-900: #1d222a;
+
+  --color-vert-50: #eef7f1;
+  --color-vert-700: #1f6b3f;
+
+  --color-ambre-50: #fdf5e7;
+  --color-ambre-700: #8a5a00;
+
+  --color-brique-50: #fdeeed;
+  --color-brique-700: #9a2c22;
+}
+
+/* Le contour de focus au clavier, visible partout.
+   Il est declare une fois ici plutot que classe par classe : une personne qui
+   navigue au clavier doit toujours savoir ou elle est, et cette garantie ne
+   doit pas dependre du fait qu'on ait pense a l'ajouter sur chaque bouton. */
+:focus-visible {
+  outline: 3px solid var(--color-ardoise-900);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+body {
+  background: var(--color-ardoise-50);
+  color: var(--color-ardoise-900);
+}

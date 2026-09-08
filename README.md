@@ -86,21 +86,83 @@ viennent les donnees.
 ## Comment je travaille avec l'IA
 
 Cette application a ete ecrite avec l'aide de Claude Code. Je le dis en premier
-plutot que de laisser le deviner, parce que c'est ma facon de travailler depuis
-un an et que ce qui compte est la maniere.
+plutot que de laisser le deviner.
 
-Je decide de ce qu'on construit et de son decoupage, et je decide de ce qui
-n'entre pas : les six choix ci-dessus sont les miens, y compris celui de ne pas
-mettre de base de donnees alors que l'annonce cite PostgreSQL. Ensuite je
-verifie, parce qu'une consigne donnee a un modele n'est pas une garantie. Le
+**Ce que je cherche a obtenir n'est pas d'ecrire plus vite. C'est que le code
+tienne sans l'outil.** Le jour ou l'assistant ne repond pas, ou l'acces est
+coupe, ou simplement ou quelqu'un d'autre reprend le projet, il faut pouvoir
+ouvrir un fichier et comprendre ce qu'il fait sans rien demander a personne. Un
+code qu'on ne peut relire qu'avec l'aide qui l'a ecrit n'est pas un code livre,
+c'est une dette.
+
+C'est de la que viennent les regles d'ecriture du projet, et elles se verifient
+en ouvrant n'importe quel fichier :
+
+- **Un commentaire dit pourquoi, jamais quoi.** `// on incremente i` ne sert a
+  personne, la ligne le dit deja. Ce qui manque six mois plus tard, c'est la
+  raison du choix, et elle ne se retrouve pas en relisant.
+- **Les noms sont ceux du metier, en francais.** `seuil`, `reference`, `etat`,
+  `famille`. Quelqu'un du magasin comprend la moitie du code sans etre
+  developpeur, et c'est l'objectif quand on ecrit un outil interne.
+- **Une regle vit a un seul endroit.** Le calcul de l'etat, la regle du pluriel,
+  l'apparence d'une etiquette.
+- **Rien n'est abrege.** `quantite` et pas `qte`. Trois caracteres gagnes ne
+  valent pas une hesitation a la relecture.
+
+Le reste suit : je decide de ce qu'on construit et de son decoupage, et je decide
+de ce qui n'entre pas - les six choix ci-dessus sont les miens, y compris celui
+de ne pas mettre de base de donnees alors que l'annonce cite PostgreSQL. Ensuite
+je verifie, parce qu'une consigne donnee a un modele n'est pas une garantie. Le
 premier essai de l'API repondait "12 rouleaus" : la regle du pluriel etait ecrite
 a trois endroits, elle est maintenant dans `shared/pluriel.ts` et appelee
 partout. Une regle ecrite trois fois n'est pas trois fois plus sure, elle est
 trois fois plus fragile.
 
-Ce que je cherche n'est pas d'ecrire moins de code. C'est d'aller plus vite sur
-ce que je connais deja, et d'apprendre plus vite ce que je ne connais pas
-encore.
+## Ce que fait chaque fichier
+
+| Fichier | Ce qu'il fait |
+| --- | --- |
+| `shared/types/stock.ts` | La forme des donnees. Lu par le serveur ET par l'interface, donc les deux parlent de la meme chose. |
+| `shared/pluriel.ts` | Le pluriel des unites. Une regle de langue, ecrite une seule fois. |
+| `server/donnees/references.ts` | Les cinq sites et les dix-huit references de demonstration. Le seul fichier a remplacer le jour ou on branche une base. |
+| `server/api/references.get.ts` | Rend la liste filtree et triee. C'est lui qui calcule l'etat de chaque ligne. |
+| `server/api/sites.get.ts` | Rend la liste des sites, pour remplir le menu du filtre. |
+| `server/api/reappro.post.ts` | Recoit une demande de reapprovisionnement, la verifie, rend un numero ou un refus motive. |
+| `app/pages/index.vue` | L'ecran. Il tient les filtres et la reference ouverte, et rien d'autre. |
+| `app/components/BarreDeFiltres.vue` | Les quatre champs de filtre et le compteur de resultats. Ne filtre rien lui-meme. |
+| `app/components/TableauReferences.vue` | Le tableau. Affiche, et previent la page quand on ouvre une ligne. |
+| `app/components/PanneauDetail.vue` | La fiche et le formulaire. Le seul endroit qui ecrit au lieu de lire. |
+| `app/components/EtiquetteEtat.vue` | La pastille d'etat : un mot, une forme, une couleur. Utilisee par le tableau et par la fiche. |
+| `app/assets/css/main.css` | Les couleurs du projet et le contour de focus, declares une fois. |
+| `nuxt.config.ts` | Les quelques choix qui ne se devinent pas des dossiers. |
+
+## Comment on modifie, sans rien demander a personne
+
+C'est le vrai test d'un code lisible : savoir ou poser la main.
+
+**Changer la regle du seuil.** Un fichier, une fonction :
+`server/api/references.get.ts`, fonction `etatDe`. Trois lignes, et tout l'ecran
+suit - le tri, les pastilles, le compteur du haut.
+
+**Ajouter un quatrieme etat**, par exemple `bientot-perime`. On l'ajoute au type
+`EtatStock` dans `shared/types/stock.ts`, et **le projet refuse de compiler tant
+que les deux endroits qui doivent le connaitre ne l'ont pas** : la table
+`APPARENCE` de `EtiquetteEtat.vue` et l'ordre de tri de `references.get.ts`. Les
+deux sont ecrits en `Record<EtatStock, ...>` exactement pour ca. `npm run
+verifier` les nomme.
+
+**Ajouter une colonne au tableau.** Le champ dans `shared/types/stock.ts`, la
+valeur dans `server/donnees/references.ts`, puis un `<th>` et un `<td>` dans
+`TableauReferences.vue`. TypeScript signale les deux premiers oublis.
+
+**Ajouter une famille de produits.** La valeur dans le type `Famille`
+(`shared/types/stock.ts`), puis le libelle dans la liste `FAMILLES` de
+`BarreDeFiltres.vue`. Attention : TypeScript ne force pas le second, c'est une
+liste d'affichage. C'est le seul endroit du projet ou un oubli passe en silence.
+
+**Brancher une vraie base de donnees.** Un seul fichier :
+`server/donnees/references.ts`. Les routes et l'interface ne savent pas d'ou
+viennent les donnees, et n'ont pas a le savoir.
 
 ## Ce qu'il n'y a pas dedans
 

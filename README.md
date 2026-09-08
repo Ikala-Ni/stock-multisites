@@ -19,6 +19,7 @@ correspond a une entreprise reelle.
 ```bash
 npm install
 npm run dev        # http://localhost:3000
+npm run tester     # la suite de tests
 npm run verifier   # verification des types sur tout le projet
 ```
 
@@ -32,6 +33,7 @@ Node 20 ou plus recent.
 | Vue 3, `script setup` | La forme courante aujourd'hui. Les proprietes et les evenements d'un composant sont declares en TypeScript, donc verifies. |
 | TypeScript | Les types sont dans `shared/`, lus par le serveur ET par l'interface. Ajouter un champ signale tous les endroits qui ne le connaissent pas encore. |
 | Tailwind 4 | Les couleurs du projet sont declarees une fois dans `app/assets/css/main.css`. Pas de fichier de configuration separe depuis la version 4. |
+| Vitest | Les regles metier vivent dans `shared/regles.ts`, sans dependance a HTTP : les verifier est un appel de fonction, pas une requete a un serveur qu'il faut demarrer. |
 | Pas de base de donnees | Les donnees sont dans `server/donnees/references.ts`. Voir plus bas : c'est un choix, pas un oubli. |
 
 ```
@@ -43,7 +45,9 @@ server/
   donnees/       les donnees de demonstration
 shared/
   types/         les types partages entre le serveur et l'interface
+  regles.ts      les regles metier, hors de toute route HTTP
   pluriel.ts     une regle de langue, ecrite une seule fois
+tests/           22 cas sur les regles, sans demarrer de serveur
 ```
 
 ## Ce que j'ai decide, et pourquoi
@@ -63,6 +67,14 @@ se stocke pas.
 **Trois etats et pas un booleen.** Entre "il en reste assez" et "il n'y en a
 plus", il y a le moment ou il faut commander, et c'est le seul qui soit utile a
 quelqu'un dont c'est le travail.
+
+**Les regles metier sont sorties des routes.** Une regle enfermee dans une route
+ne peut etre appelee que par un appel HTTP : pour verifier qu'une quantite de 0
+est refusee, il faudrait demarrer un serveur, envoyer une requete et lire une
+reponse - trois choses qui peuvent echouer pour des raisons etrangeres a la
+regle. Dans `shared/regles.ts`, la meme verification est un appel de fonction.
+Ce n'est pas un amenagement pour les tests : la route est de la plomberie, et le
+metier n'a pas a en dependre.
 
 **Le formulaire est verifie deux fois, et ce n'est pas une repetition.** La
 verification du navigateur previent tout de suite, sans aller-retour ; celle du
@@ -123,11 +135,13 @@ trois fois plus fragile.
 | Fichier | Ce qu'il fait |
 | --- | --- |
 | `shared/types/stock.ts` | La forme des donnees. Lu par le serveur ET par l'interface, donc les deux parlent de la meme chose. |
+| `shared/regles.ts` | Les regles metier : l'etat d'une ligne, la selection, la quantite acceptable. Aucune dependance a HTTP, donc verifiables sans serveur. |
 | `shared/pluriel.ts` | Le pluriel des unites. Une regle de langue, ecrite une seule fois. |
+| `tests/` | La suite de tests. Chaque cas correspond a une regle voulue ou a un bug rencontre. |
 | `server/donnees/references.ts` | Les cinq sites et les dix-huit references de demonstration. Le seul fichier a remplacer le jour ou on branche une base. |
-| `server/api/references.get.ts` | Rend la liste filtree et triee. C'est lui qui calcule l'etat de chaque ligne. |
+| `server/api/references.get.ts` | Lit les filtres dans l'adresse et appelle la regle. De la plomberie, rien de plus. |
 | `server/api/sites.get.ts` | Rend la liste des sites, pour remplir le menu du filtre. |
-| `server/api/reappro.post.ts` | Recoit une demande de reapprovisionnement, la verifie, rend un numero ou un refus motive. |
+| `server/api/reappro.post.ts` | Recoit une demande de reapprovisionnement, demande a la regle si elle est acceptable, rend un numero ou un refus motive. |
 | `app/pages/index.vue` | L'ecran. Il tient les filtres et la reference ouverte, et rien d'autre. |
 | `app/components/BarreDeFiltres.vue` | Les quatre champs de filtre et le compteur de resultats. Ne filtre rien lui-meme. |
 | `app/components/TableauReferences.vue` | Le tableau. Affiche, et previent la page quand on ouvre une ligne. |
@@ -136,20 +150,47 @@ trois fois plus fragile.
 | `app/assets/css/main.css` | Les couleurs du projet et le contour de focus, declares une fois. |
 | `nuxt.config.ts` | Les quelques choix qui ne se devinent pas des dossiers. |
 
+## La suite de tests
+
+`npm run tester` : 22 cas, moins d'une seconde, aucun serveur a demarrer.
+
+Ce qui est verifie : le calcul de l'etat, y compris **au seuil exactement** - la
+regle veut qu'on commande deja, attendre d'etre en dessous c'est attendre d'etre
+en retard ; la selection par site, par famille et par recherche, avec ou sans
+accents ; l'ordre d'affichage, l'urgence d'abord ; le repli sur le code quand un
+site est introuvable ; et le refus d'une quantite nulle, negative, decimale, non
+numerique ou trop grande.
+
+Deux principes derriere ces cas :
+
+**Les donnees des tests sont fabriquees pour l'occasion**, pas reprises du
+fichier de demonstration. Un test doit echouer quand la REGLE se casse, jamais
+parce que quelqu'un a ajoute une cagette.
+
+**Chaque cas correspond a une regle voulue ou a un bug rencontre.** Le cas
+`auPluriel('rouleau', 12)` est la parce que l'API a vraiment repondu
+"12 rouleaus" au premier essai. C'est la difference entre une suite qui protege
+et une suite qui fait joli dans un depot.
+
+La suite a ete verifiee en la faisant echouer : remplacer `quantite <= seuil` par
+`quantite < seuil` dans `etatDe` fait tomber le cas du seuil exact, et lui seul.
+Une suite qu'on n'a jamais vue echouer ne prouve rien.
+
 ## Comment on modifie, sans rien demander a personne
 
 C'est le vrai test d'un code lisible : savoir ou poser la main.
 
-**Changer la regle du seuil.** Un fichier, une fonction :
-`server/api/references.get.ts`, fonction `etatDe`. Trois lignes, et tout l'ecran
-suit - le tri, les pastilles, le compteur du haut.
+**Changer la regle du seuil.** Un fichier, une fonction : `shared/regles.ts`,
+fonction `etatDe`. Trois lignes, et tout l'ecran suit - le tri, les pastilles, le
+compteur du haut. `npm run tester` dit tout de suite si le changement casse autre
+chose que ce qu'on visait.
 
 **Ajouter un quatrieme etat**, par exemple `bientot-perime`. On l'ajoute au type
 `EtatStock` dans `shared/types/stock.ts`, et **le projet refuse de compiler tant
 que les deux endroits qui doivent le connaitre ne l'ont pas** : la table
-`APPARENCE` de `EtiquetteEtat.vue` et l'ordre de tri de `references.get.ts`. Les
-deux sont ecrits en `Record<EtatStock, ...>` exactement pour ca. `npm run
-verifier` les nomme.
+`APPARENCE` de `EtiquetteEtat.vue` et l'ordre de tri `RANG` de
+`shared/regles.ts`. Les deux sont ecrits en `Record<EtatStock, ...>` exactement
+pour ca. `npm run verifier` les nomme, avec leur fichier et leur ligne.
 
 **Ajouter une colonne au tableau.** Le champ dans `shared/types/stock.ts`, la
 valeur dans `server/donnees/references.ts`, puis un `<th>` et un `<td>` dans
@@ -168,8 +209,13 @@ viennent les donnees, et n'ont pas a le savoir.
 
 Une demande de reapprovisionnement est validee puis renvoyee avec un numero,
 mais rien n'est enregistre de facon durable. Il n'y a ni comptes, ni droits, ni
-historique des mouvements, ni tests automatises. Ce sont les etapes suivantes,
-et elles demandent une base de donnees.
+historique des mouvements. Ce sont les etapes suivantes, et elles demandent une
+base de donnees.
+
+Les tests couvrent les regles metier, pas l'affichage : il n'y a pas de test de
+composant ni de parcours de bout en bout. C'est assume pour cette taille de
+projet - ce sont les regles qui se cassent en silence, une page qui ne s'affiche
+plus se voit tout de suite.
 
 ---
 

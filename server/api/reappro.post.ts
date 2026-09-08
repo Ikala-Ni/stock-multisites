@@ -17,10 +17,9 @@
 // repetition.
 
 import { REFERENCES, SITES } from '~~/server/donnees/references'
-import { quantiteEcrite } from '~~/shared/pluriel'
+import { auPluriel, quantiteEcrite } from '~~/shared/pluriel'
+import { verifierQuantite } from '~~/shared/regles'
 import type { DemandeReappro, ReponseReappro } from '~~/shared/types/stock'
-
-const QUANTITE_MAX = 500
 
 export default defineEventHandler(async (event): Promise<ReponseReappro> => {
   // readBody rend ce que le navigateur a envoye. On ne lui fait pas confiance :
@@ -37,19 +36,12 @@ export default defineEventHandler(async (event): Promise<ReponseReappro> => {
     throw createError({ statusCode: 404, statusMessage: 'Reference inconnue' })
   }
 
-  const quantite = Number(corps?.quantite)
-  if (!Number.isInteger(quantite) || quantite <= 0) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'La quantite doit etre un nombre entier superieur a zero.',
-    })
-  }
-  if (quantite > QUANTITE_MAX) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: `La quantite demandee depasse le maximum de ${quantiteEcrite(QUANTITE_MAX, reference.unite)}.`,
-    })
-  }
+  // La regle dit oui ou non ; c'est cette route qui sait qu'on repond en HTTP,
+  // donc c'est elle qui transforme un refus en erreur 400.
+  const refus = verifierQuantite(corps?.quantite, auPluriel(reference.unite, 2))
+  if (refus) throw createError({ statusCode: refus.statut, statusMessage: refus.raison })
+
+  const quantite = Number(corps.quantite)
 
   const nomDuSite = SITES.find((s) => s.code === reference.siteCode)?.nom ?? reference.siteCode
 

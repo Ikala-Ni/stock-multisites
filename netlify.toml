@@ -1,0 +1,30 @@
+# LA CONFIGURATION DE MISE EN LIGNE.
+#
+# POURQUOI DANS LE DEPOT ET PAS DANS L'INTERFACE DE NETLIFY.
+#
+# Les memes reglages peuvent se cliquer dans leur tableau de bord. Ecrits ici,
+# ils ont trois qualites que le tableau de bord n'a pas : ils sont VERSIONNES,
+# donc on voit qui les a changes et quand ; ils sont RELISIBLES par quelqu'un
+# qui clone le projet, sans avoir a demander un acces ; et ils se DEPLACENT avec
+# le depot le jour ou on change d'hebergeur.
+#
+# Une configuration qui n'existe que dans une interface est une configuration que
+# personne ne retrouve.
+#
+# Nuxt sait qu'il tourne chez Netlify et s'y adapte tout seul : il n'y a aucune
+# variable a poser. Ce fichier ne fait que nommer ce qu'il produit deja.
+
+[build]
+  # La commande, la meme qu'en local.
+  command = "npm run build"
+
+  # Ce que le navigateur telecharge : les pages et les fichiers statiques.
+  # Le SERVEUR, lui, n'est pas ici : Nuxt le depose dans .netlify/
+  # functions-internal, ou Netlify le trouve seul et le transforme en fonction.
+  # C'est ce qui fait tourner les routes d'API sans qu'on loue une machine.
+  publish = "dist"
+
+# La version de Node n'est PAS ecrite ici : elle est dans .nvmrc, que Netlify lit
+# comme le fait la verification automatique de GitHub. Une seule ligne gouverne
+# les deux machines - ecrite aux deux endroits, elle aurait diverge, et on aurait
+# verifie sur une version et mis en ligne sur une autre.

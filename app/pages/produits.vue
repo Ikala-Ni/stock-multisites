@@ -44,8 +44,8 @@ const FAMILLES: { valeur: Famille; libelle: string }[] = [
     <header class="mb-6">
       <h1 class="text-2xl font-bold">Les produits</h1>
       <p class="mt-1 max-w-2xl text-ardoise-500">
-        Ce que le groupe achete, a quoi chaque produit sert, et quels sites en detiennent.
-        Cette page est faite pour prendre ses reperes ; le suivi quotidien se fait sur l ecran
+        Ce que le groupe achète, à quoi chaque produit sert, et quels sites en détiennent.
+        Cette page est faite pour prendre ses repères ; le suivi quotidien se fait sur l'écran
         de stock.
       </p>
     </header>
@@ -86,7 +86,7 @@ const FAMILLES: { valeur: Famille; libelle: string }[] = [
       </div>
 
       <p aria-live="polite" class="mt-4 border-t border-ardoise-100 pt-3 text-sm text-ardoise-500">
-        {{ fiches.length }} produit{{ fiches.length > 1 ? 's' : '' }} affiche{{ fiches.length > 1 ? 's' : '' }}
+        {{ fiches.length }} produit{{ fiches.length > 1 ? 's' : '' }} affiché{{ fiches.length > 1 ? 's' : '' }}
       </p>
     </section>
 
@@ -94,7 +94,7 @@ const FAMILLES: { valeur: Famille; libelle: string }[] = [
       <p v-if="enChargement" class="py-12 text-center text-ardoise-500">Chargement en cours...</p>
 
       <p v-else-if="!fiches.length" class="py-12 text-center text-ardoise-500">
-        Aucun produit ne correspond a cette recherche.
+        Aucun produit ne correspond à cette recherche.
       </p>
 
       <!-- auto-fill avec une largeur minimale : le nombre de colonnes suit la

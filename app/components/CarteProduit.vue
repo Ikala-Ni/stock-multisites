@@ -62,7 +62,7 @@ const LIBELLE_FAMILLE = {
       </div>
 
       <p v-if="!fiche.presences.length" class="text-sm text-ardoise-500">
-        Aucun site n en detient. Le produit reste commandable.
+        Aucun site n'en détient. Le produit reste commandable.
       </p>
 
       <ul v-else class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-ardoise-700">

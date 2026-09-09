@@ -16,9 +16,10 @@
 // confort, celle-ci sert de regle. Les ecrire toutes les deux n'est pas une
 // repetition.
 
-import { REFERENCES, SITES } from '~~/server/donnees/references'
+import { PRODUITS } from '~~/server/donnees/catalogue'
+import { SITES, STOCKS } from '~~/server/donnees/stocks'
 import { auPluriel, quantiteEcrite } from '~~/shared/pluriel'
-import { verifierQuantite } from '~~/shared/regles'
+import { joindre, verifierQuantite } from '~~/shared/regles'
 import type { DemandeReappro, ReponseReappro } from '~~/shared/types/stock'
 
 export default defineEventHandler(async (event): Promise<ReponseReappro> => {
@@ -27,31 +28,26 @@ export default defineEventHandler(async (event): Promise<ReponseReappro> => {
   // TypeScript verifie le code, pas le reseau.
   const corps = await readBody<Partial<DemandeReappro>>(event)
 
-  const reference = REFERENCES.find((r) => r.id === corps?.referenceId)
-  if (!reference) {
-    // 404 et non 400 : la demande est bien formee, c'est la reference qui
-    // n'existe pas. Le code de statut fait partie de la reponse, il n'est pas
-    // decoratif : c'est ce qui permet a un autre programme de comprendre sans
-    // lire le message francais.
-    throw createError({ statusCode: 404, statusMessage: 'Reference inconnue' })
+  const ligne = joindre(STOCKS, PRODUITS, SITES).find((l) => l.id === corps?.ligneId)
+  if (!ligne) {
+    // 404 et non 400 : la demande est bien formee, c'est la ligne qui n'existe
+    // pas. Le code de statut fait partie de la reponse, il n'est pas decoratif :
+    // c'est ce qui permet a un autre programme de comprendre sans lire le
+    // message francais.
+    throw createError({ statusCode: 404, statusMessage: 'Ligne de stock inconnue' })
   }
 
   // La regle dit oui ou non ; c'est cette route qui sait qu'on repond en HTTP,
   // donc c'est elle qui transforme un refus en erreur 400.
-  const refus = verifierQuantite(corps?.quantite, auPluriel(reference.unite, 2))
+  const refus = verifierQuantite(corps?.quantite, auPluriel(ligne.produit.unite, 2))
   if (refus) throw createError({ statusCode: refus.statut, statusMessage: refus.raison })
 
   const quantite = Number(corps.quantite)
-
-  const nomDuSite = SITES.find((s) => s.code === reference.siteCode)?.nom ?? reference.siteCode
-
-  const numero = `RA-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${reference.id}`
+  const numero = `RA-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${ligne.id}`
 
   return {
     accepte: true,
     numero,
-    // Le NOM du site, pas son code : "site de MOI" est lisible par la DSI et par
-    // personne d'autre. Un message rendu a l'utilisateur parle sa langue.
-    message: `Demande enregistree pour ${quantiteEcrite(quantite, reference.unite)} de ${reference.designation}, site de ${nomDuSite}.`,
+    message: `Demande enregistree pour ${quantiteEcrite(quantite, ligne.produit.unite)} de ${ligne.produit.designation}, site de ${ligne.siteNom}.`,
   }
 })

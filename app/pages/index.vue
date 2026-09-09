@@ -1,11 +1,11 @@
 <script setup lang="ts">
 // L'ECRAN DE SUIVI DU STOCK.
 //
-// La page tient l'etat des filtres et la reference ouverte, et rien d'autre :
-// elle ne dessine ni le tableau, ni la fiche, ni les etiquettes. Chaque
-// morceau est un composant qu'on peut ouvrir seul et comprendre seul.
+// La page tient l'etat des filtres et la ligne ouverte, et rien d'autre : elle
+// ne dessine ni le tableau, ni la fiche, ni les etiquettes. Chaque morceau est
+// un composant qu'on peut ouvrir seul et comprendre seul.
 //
-// LE POINT CENTRAL, C'EST useFetch AVEC SON "watch".
+// LE POINT CENTRAL, C'EST useFetch AVEC SA REQUETE EN COMPUTED.
 //
 // useFetch appelle l'API et garde le resultat. En lui passant les filtres dans
 // une fonction plutot qu'un objet fige, l'appel se refait tout seul des qu'un
@@ -13,21 +13,26 @@
 // C'est ce que Vue appelle la reactivite, et c'est ce qui remplace la moitie du
 // code qu'on ecrirait a la main en JavaScript nu.
 
-import type { Famille, ReferenceCalculee, Site } from '~~/shared/types/stock'
+import type { Famille, LigneStock, Site } from '~~/shared/types/stock'
+
+// La recherche peut arriver depuis le catalogue, par l'adresse : cliquer "Voir
+// le stock" sur une carte produit ouvre cet ecran deja filtre sur ce produit.
+// C'est ce qui relie les deux pages au lieu d'en faire deux ilots.
+const route = useRoute()
 
 const site = ref('')
 const famille = ref<Famille | ''>('')
-const recherche = ref('')
+const recherche = ref(typeof route.query.recherche === 'string' ? route.query.recherche : '')
 const aCommanderSeulement = ref(false)
 
 // La liste des sites ne bouge pas : on la demande une fois.
 const { data: sites } = await useFetch<Site[]>('/api/sites', { default: () => [] })
 
 const {
-  data: references,
+  data: lignes,
   status,
   error,
-} = await useFetch<ReferenceCalculee[]>('/api/references', {
+} = await useFetch<LigneStock[]>('/api/references', {
   // Les parametres passes en fonction : c'est ce "() =>" qui fait que Nuxt
   // surveille les filtres et rappelle l'API quand l'un d'eux change.
   query: computed(() => ({
@@ -41,19 +46,19 @@ const {
 
 const enChargement = computed(() => status.value === 'pending')
 
-const selection = ref<ReferenceCalculee | null>(null)
+const selection = ref<LigneStock | null>(null)
 
 // Le compte de ce qui demande une action, calcule a partir de ce qui est
 // affiche. computed et non une variable mise a jour a la main : une valeur qui
 // se deduit d'une autre ne se recopie pas, sinon les deux finissent par ne plus
 // dire la meme chose.
-const nombreAAgir = computed(() => references.value.filter((r) => r.etat !== 'suffisant').length)
+const nombreAAgir = computed(() => lignes.value.filter((l) => l.etat !== 'suffisant').length)
 
-// Quand les filtres changent, la reference ouverte peut ne plus etre dans la
-// liste. On ferme la fiche : laisser ouverte une fiche absente du tableau est
-// le genre de petit mensonge dont on ne se remet pas.
-watch(references, (liste) => {
-  if (selection.value && !liste.some((r) => r.id === selection.value?.id)) {
+// Quand les filtres changent, la ligne ouverte peut ne plus etre dans la liste.
+// On ferme la fiche : laisser ouverte une fiche absente du tableau est le genre
+// de petit mensonge dont on ne se remet pas.
+watch(lignes, (liste) => {
+  if (selection.value && !liste.some((l) => l.id === selection.value?.id)) {
     selection.value = null
   }
 })
@@ -73,7 +78,7 @@ watch(references, (liste) => {
       v-if="nombreAAgir > 0"
       class="mb-6 rounded-lg border border-ambre-700 bg-ambre-50 px-4 py-3 text-sm font-medium text-ambre-700"
     >
-      {{ nombreAAgir }} reference{{ nombreAAgir > 1 ? 's' : '' }} a commander ou en rupture dans cette selection.
+      {{ nombreAAgir }} ligne{{ nombreAAgir > 1 ? 's' : '' }} a commander ou en rupture dans cette selection.
     </p>
 
     <BarreDeFiltres
@@ -82,7 +87,7 @@ watch(references, (liste) => {
       v-model:recherche="recherche"
       v-model:a-commander-seulement="aCommanderSeulement"
       :sites="sites"
-      :nombre-affiche="references.length"
+      :nombre-affiche="lignes.length"
       class="mb-6"
     />
 
@@ -90,15 +95,15 @@ watch(references, (liste) => {
       Le stock n a pas pu etre charge. Verifie que le serveur repond, puis recharge la page.
     </p>
 
-    <main id="contenu" class="grid gap-6" :class="selection ? 'lg:grid-cols-[1fr_22rem]' : ''">
+    <main id="contenu" class="grid gap-6" :class="selection ? 'lg:grid-cols-[1fr_24rem]' : ''">
       <TableauReferences
-        :references="references"
+        :lignes="lignes"
         :en-chargement="enChargement"
         :id-selectionne="selection?.id ?? null"
         @selectionner="selection = $event"
       />
 
-      <PanneauDetail v-if="selection" :reference="selection" @fermer="selection = null" />
+      <PanneauDetail v-if="selection" :ligne="selection" @fermer="selection = null" />
     </main>
   </div>
 </template>

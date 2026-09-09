@@ -8,19 +8,28 @@
 //      envoie trois demandes. On desactive pendant l'envoi, et on le dit.
 //   2. L'erreur du serveur, affichee telle qu'il l'a formulee. Un "une erreur
 //      est survenue" n'aide personne : le serveur sait pourquoi il a refuse.
-//   3. Le retour au calme. Apres une demande acceptee, le formulaire se vide et
-//      le message reste, sinon on ne sait pas si ca a marche.
+//   3. Le retour au calme. Apres une demande acceptee, le message reste, sinon
+//      on ne sait pas si ca a marche.
+//
+// LA FICHE PORTE CE QUI SERT A DECIDER, ET RIEN D'AUTRE. Dimensions,
+// conditionnement et fournisseur sont la parce qu'on les regarde avant de
+// commander ; l'historique parce qu'il dit si le stock est parti d'un coup ou
+// s'epuise lentement. La description "a quoi ca sert", elle, n'est PAS ici :
+// quelqu'un qui ouvre une fiche de stock sait deja ce qu'est une cagette. Elle
+// vit dans le catalogue, qui s'adresse a quelqu'un d'autre.
 
-import type { DemandeReappro, ReferenceCalculee, ReponseReappro } from '~~/shared/types/stock'
+import type { DemandeReappro, LigneStock, ReponseReappro } from '~~/shared/types/stock'
 import { auPluriel, quantiteEcrite } from '~~/shared/pluriel'
 
-const props = defineProps<{ reference: ReferenceCalculee }>()
+const props = defineProps<{ ligne: LigneStock }>()
 const emit = defineEmits<{ fermer: [] }>()
 
 // La quantite proposee par defaut : de quoi repasser au-dessus du seuil, avec
 // une marge. C'est le genre de detail qui fait qu'un outil interne est utilise
 // ou contourne - la personne n'a rien a calculer dans sa tete.
-const quantite = ref(Math.max(1, props.reference.seuil * 2 - props.reference.quantite))
+const quantiteProposee = (l: LigneStock) => Math.max(1, l.seuil * 2 - l.quantite)
+
+const quantite = ref(quantiteProposee(props.ligne))
 const commentaire = ref('')
 
 const envoiEnCours = ref(false)
@@ -28,12 +37,12 @@ const erreur = ref('')
 const succes = ref<ReponseReappro | null>(null)
 
 // watch : quand on ouvre une autre fiche sans fermer le panneau, tout se remet
-// a zero. Sans ca, le message de succes de la reference precedente resterait
-// affiche au-dessus d'une autre reference, et on croirait avoir commande.
+// a zero. Sans ca, le message de succes de la ligne precedente resterait
+// affiche au-dessus d'une autre ligne, et on croirait avoir commande.
 watch(
-  () => props.reference.id,
+  () => props.ligne.id,
   () => {
-    quantite.value = Math.max(1, props.reference.seuil * 2 - props.reference.quantite)
+    quantite.value = quantiteProposee(props.ligne)
     commentaire.value = ''
     erreur.value = ''
     succes.value = null
@@ -47,7 +56,7 @@ async function envoyer() {
 
   try {
     const corps: DemandeReappro = {
-      referenceId: props.reference.id,
+      ligneId: props.ligne.id,
       quantite: quantite.value,
       commentaire: commentaire.value || undefined,
     }
@@ -70,13 +79,18 @@ async function envoyer() {
 <template>
   <aside aria-labelledby="titre-fiche" class="rounded-lg border border-ardoise-200 bg-white p-5">
     <div class="mb-4 flex items-start justify-between gap-4">
-      <div>
-        <h2 id="titre-fiche" class="text-lg font-semibold">{{ reference.designation }}</h2>
-        <p class="text-sm text-ardoise-500">{{ reference.id }} | site de {{ reference.siteNom }}</p>
+      <div class="flex items-start gap-3">
+        <VignetteProduit :visuel="ligne.produit.visuel" :taille="44" />
+        <div>
+          <h2 id="titre-fiche" class="text-lg font-semibold leading-tight">
+            {{ ligne.produit.designation }}
+          </h2>
+          <p class="text-sm text-ardoise-500">{{ ligne.produit.id }} | site de {{ ligne.siteNom }}</p>
+        </div>
       </div>
       <button
         type="button"
-        class="rounded-md border border-ardoise-200 px-2.5 py-1 text-sm hover:bg-ardoise-50"
+        class="shrink-0 rounded-md border border-ardoise-200 px-2.5 py-1 text-sm hover:bg-ardoise-50"
         @click="emit('fermer')"
       >
         Fermer<span class="sr-only"> la fiche</span>
@@ -89,28 +103,47 @@ async function envoyer() {
     <dl class="mb-5 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
       <div>
         <dt class="text-ardoise-500">En stock</dt>
-        <dd class="font-semibold tabular-nums">{{ quantiteEcrite(reference.quantite, reference.unite) }}</dd>
+        <dd class="font-semibold tabular-nums">{{ quantiteEcrite(ligne.quantite, ligne.produit.unite) }}</dd>
       </div>
       <div>
         <dt class="text-ardoise-500">Seuil d alerte</dt>
-        <dd class="font-semibold tabular-nums">{{ reference.seuil }}</dd>
+        <dd class="font-semibold tabular-nums">{{ ligne.seuil }}</dd>
       </div>
       <div>
         <dt class="text-ardoise-500">Etat</dt>
-        <dd class="mt-0.5"><EtiquetteEtat :etat="reference.etat" /></dd>
+        <dd class="mt-0.5"><EtiquetteEtat :etat="ligne.etat" /></dd>
       </div>
       <div>
         <dt class="text-ardoise-500">Famille</dt>
-        <dd class="font-semibold capitalize">{{ reference.famille }}</dd>
+        <dd class="font-semibold capitalize">{{ ligne.produit.famille }}</dd>
       </div>
     </dl>
+
+    <dl class="mb-5 grid gap-y-2 border-t border-ardoise-100 pt-4 text-sm">
+      <div class="flex justify-between gap-4">
+        <dt class="text-ardoise-500">Dimensions</dt>
+        <dd class="text-right font-medium">{{ ligne.produit.dimensions }}</dd>
+      </div>
+      <div class="flex justify-between gap-4">
+        <dt class="text-ardoise-500">Conditionnement</dt>
+        <dd class="text-right font-medium">{{ ligne.produit.conditionnement }}</dd>
+      </div>
+      <div class="flex justify-between gap-4">
+        <dt class="text-ardoise-500">Fournisseur</dt>
+        <dd class="text-right font-medium tabular-nums">{{ ligne.produit.fournisseur }}</dd>
+      </div>
+    </dl>
+
+    <div class="mb-5 border-t border-ardoise-100 pt-4">
+      <HistoriqueMouvements :mouvements="ligne.mouvements" :unite="ligne.produit.unite" />
+    </div>
 
     <form class="border-t border-ardoise-100 pt-4" @submit.prevent="envoyer">
       <h3 class="mb-3 font-semibold">Demander un reapprovisionnement</h3>
 
       <div class="mb-3">
         <label for="champ-quantite" class="mb-1 block text-sm font-medium">
-          Quantite en {{ auPluriel(reference.unite, 2) }}
+          Quantite en {{ auPluriel(ligne.produit.unite, 2) }}
         </label>
         <input
           id="champ-quantite"

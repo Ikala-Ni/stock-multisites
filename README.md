@@ -379,6 +379,58 @@ dans `server/depot/postgres.ts`. Puis `npm run bd:remettre-a-neuf` et
 `npm run bd:semer`. Le schema ne se rejoue qu'au premier demarrage du conteneur,
 c'est pour ca qu'il faut le recreer.
 
+## Ou on en est, au 10 septembre 2026
+
+*Ce point est ecrit pour la prochaine session, la mienne ou celle de quelqu'un d'autre.*
+
+**Ce qui tourne.** Le depot est public, le site est en ligne chez Netlify et se redeploie a
+chaque poussee sur `main`. La verification automatique est verte. 43 tests, typecheck propre.
+Toute la pile de l'annonce est couverte sauf SAP et l'ERP, ecartes parce qu'ils ne sont pas
+demontrables hors d'une entreprise qui en a un.
+
+**Ce qui reste, et le premier point est le plus important.**
+
+1. **Personne n'a encore modifie ce code a la main.** Tout a ete ecrit d'une traite avec l'aide
+   de l'IA. Tant qu'un seuil, un libelle ou une colonne n'a pas ete change par quelqu'un qui
+   assume la decision, la phrase "je reste l'architecte" du README est une intention, pas un
+   fait. C'est le travail le plus utile qui reste, et il ne coute rien.
+2. **Deux decisions restent a arbitrer** : trois etats plutot que deux, et l'ordre du catalogue
+   (alphabetique et non par urgence). Les deux se defendent, aucune n'est evidente.
+3. **Quatre branches fusionnees trainent sur GitHub** : `ci-verifications`,
+   `deploiement-netlify`, `page-a-propos`, `base-postgresql`. Les supprimer ne perd rien, les
+   commits sont dans `main` et l'historique des pull requests reste. Un depot qu'on montre gagne
+   a ne garder que `main`.
+
+**Ecarte volontairement, a ne pas reproposer.**
+
+- **Une base hebergee pour le site en ligne.** Elle couterait de l'argent tous les mois pour
+  montrer des donnees inventees. Le site sert les fichiers, `/api/source` le dit franchement, et
+  c'est la demonstration que le repli marche en production.
+- **Un fichier de CI GitLab**, alors que l'entreprise visee est sur GitLab. Il n'aurait jamais
+  tourne, donc il affirmerait sans preuve - exactement ce qu'on evite partout ailleurs ici. Le
+  principe est le meme et se dit en une phrase.
+- **Un ORM.** Sur quatre requetes, il ajouterait une couche a apprendre et cacherait justement
+  ce qu'on cherche a montrer. La question se reposera quand les requetes seront nombreuses et
+  repetitives.
+- **De vraies photos de produits.** Depot public, donc question de licence qu'on n'a aucune
+  raison de se creer ; et un carton brun photographie sur fond brun ne se distingue pas d'un
+  autre carton brun a petite taille.
+- **Le sous-domaine `stock.ikala-ni.fr`.** Faisable par un CNAME chez o2switch, ecarte pour
+  l'instant.
+
+**Deux pieges qui font perdre une heure.**
+
+- Le schema `db/01-schema.sql` n'est joue **qu'au premier demarrage du conteneur**. Le modifier
+  puis redemarrer ne change rien : il faut `npm run bd:remettre-a-neuf`, qui detruit le volume.
+- La liste `FAMILLES` de `BarreDeFiltres.vue` est le **seul endroit du projet ou un oubli passe
+  en silence** : ajouter une famille au type `Famille` ne force pas a lui donner un libelle,
+  parce que c'est une liste d'affichage que TypeScript ne peut pas relier au type.
+
+**L'habitude a garder.** Chaque controle de ce projet a ete vu ECHOUER avant d'etre livre : la
+regle du seuil cassee volontairement, un `produitId` casse volontairement, trois insertions
+fautives essayees contre la base, le conteneur arrete en cours de route pour verifier le repli.
+Une verification qu'on n'a jamais vue echouer ne prouve rien.
+
 ## Ce qu'il n'y a pas dedans
 
 Une demande de reapprovisionnement est validee puis renvoyee avec un numero,

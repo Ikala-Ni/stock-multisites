@@ -98,7 +98,7 @@ export const STOCKS: Stock[] = [
     quantite: 61,
     seuil: 30,
     mouvements: [
-      { date: '2026-09-04', sens: 'sortie', quantite: 7, motif: 'Expedition palettes' },
+      { date: '2026-09-04', sens: 'sortie', quantite: 7, motif: 'Expédition palettes' },
       { date: '2026-08-18', sens: 'entree', quantite: 48, motif: 'Livraison FRN-5011' },
     ],
   },
@@ -110,9 +110,9 @@ export const STOCKS: Stock[] = [
     quantite: 5,
     seuil: 12,
     mouvements: [
-      { date: '2026-09-07', sens: 'sortie', quantite: 9, motif: 'Tournee melons' },
-      { date: '2026-08-29', sens: 'sortie', quantite: 6, motif: 'Tournee melons' },
-      { date: '2026-08-12', sens: 'entree', quantite: 18, motif: 'Retour de tournee' },
+      { date: '2026-09-07', sens: 'sortie', quantite: 9, motif: 'Tournée melons' },
+      { date: '2026-08-29', sens: 'sortie', quantite: 6, motif: 'Tournée melons' },
+      { date: '2026-08-12', sens: 'entree', quantite: 18, motif: 'Retour de tournée' },
     ],
   },
   {
@@ -164,7 +164,7 @@ export const STOCKS: Stock[] = [
     quantite: 9,
     seuil: 9,
     mouvements: [
-      { date: '2026-08-19', sens: 'sortie', quantite: 6, motif: 'Serres de Saint-Esteve' },
+      { date: '2026-08-19', sens: 'sortie', quantite: 6, motif: 'Serres de Saint-Estève' },
       { date: '2026-05-14', sens: 'entree', quantite: 15, motif: 'Livraison FRN-7340' },
     ],
   },
@@ -196,7 +196,7 @@ export const STOCKS: Stock[] = [
     quantite: 11,
     seuil: 12,
     mouvements: [
-      { date: '2026-09-07', sens: 'sortie', quantite: 4, motif: 'Preparation campagne gel' },
+      { date: '2026-09-07', sens: 'sortie', quantite: 4, motif: 'Préparation campagne gel' },
       { date: '2026-03-18', sens: 'entree', quantite: 15, motif: 'Livraison FRN-7509' },
     ],
   },
@@ -216,7 +216,7 @@ export const STOCKS: Stock[] = [
     quantite: 24,
     seuil: 30,
     mouvements: [
-      { date: '2026-09-08', sens: 'sortie', quantite: 5, motif: 'Expedition palettes' },
+      { date: '2026-09-08', sens: 'sortie', quantite: 5, motif: 'Expédition palettes' },
       { date: '2026-08-14', sens: 'entree', quantite: 29, motif: 'Livraison FRN-5008' },
     ],
   },

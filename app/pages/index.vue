@@ -69,7 +69,7 @@ watch(lignes, (liste) => {
     <header class="mb-6">
       <h1 class="text-2xl font-bold">Suivi de stock multisites</h1>
       <p class="mt-1 text-ardoise-500">
-        Emballages, protection des cultures et conditionnement, repartis sur
+        Emballages, protection des cultures et conditionnement, répartis sur
         {{ sites.length }} sites.
       </p>
     </header>
@@ -78,7 +78,7 @@ watch(lignes, (liste) => {
       v-if="nombreAAgir > 0"
       class="mb-6 rounded-lg border border-ambre-700 bg-ambre-50 px-4 py-3 text-sm font-medium text-ambre-700"
     >
-      {{ nombreAAgir }} ligne{{ nombreAAgir > 1 ? 's' : '' }} a commander ou en rupture dans cette selection.
+      {{ nombreAAgir }} ligne{{ nombreAAgir > 1 ? 's' : '' }} à commander ou en rupture dans cette sélection.
     </p>
 
     <BarreDeFiltres
@@ -92,7 +92,7 @@ watch(lignes, (liste) => {
     />
 
     <p v-if="error" role="alert" class="mb-6 rounded-lg border border-brique-700 bg-brique-50 p-4 text-sm text-brique-700">
-      Le stock n a pas pu etre charge. Verifie que le serveur repond, puis recharge la page.
+      Le stock n'a pas pu être chargé. Vérifiez que le serveur répond, puis rechargez la page.
     </p>
 
     <main id="contenu" class="grid gap-6" :class="selection ? 'lg:grid-cols-[1fr_24rem]' : ''">

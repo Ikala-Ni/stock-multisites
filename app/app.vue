@@ -9,6 +9,7 @@
 const liens = [
   { chemin: '/', libelle: 'Suivi du stock' },
   { chemin: '/produits', libelle: 'Les produits' },
+  { chemin: '/a-propos', libelle: 'À propos' },
 ]
 </script>
 

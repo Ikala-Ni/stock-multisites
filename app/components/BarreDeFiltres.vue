@@ -37,7 +37,7 @@ function toutEffacer() {
   <!-- role="search" et un titre : une personne au lecteur d'ecran peut sauter
        directement a cette zone au lieu de parcourir la page champ par champ. -->
   <section role="search" aria-labelledby="titre-filtres" class="rounded-lg border border-ardoise-200 bg-white p-4">
-    <h2 id="titre-filtres" class="sr-only">Filtrer les references</h2>
+    <h2 id="titre-filtres" class="sr-only">Filtrer les références</h2>
 
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <!-- Chaque champ a un <label for> relie a son id. Un placeholder n'est
@@ -87,7 +87,7 @@ function toutEffacer() {
             type="checkbox"
             class="size-4 rounded border-ardoise-500"
           >
-          A commander seulement
+          À commander seulement
         </label>
       </div>
     </div>
@@ -97,7 +97,7 @@ function toutEffacer() {
            annonce, une personne au lecteur d'ecran coche une case et n'apprend
            jamais que le tableau s'est vide. -->
       <p aria-live="polite" class="text-sm text-ardoise-500">
-        {{ nombreAffiche }} reference{{ nombreAffiche > 1 ? 's' : '' }} affichee{{ nombreAffiche > 1 ? 's' : '' }}
+        {{ nombreAffiche }} référence{{ nombreAffiche > 1 ? 's' : '' }} affichée{{ nombreAffiche > 1 ? 's' : '' }}
       </p>
       <button
         type="button"

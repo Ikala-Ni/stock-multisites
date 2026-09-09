@@ -34,15 +34,15 @@ function enDateCourte(iso: string): string {
   <div class="overflow-x-auto rounded-lg border border-ardoise-200 bg-white">
     <table class="w-full border-collapse text-sm">
       <caption class="sr-only">
-        Stock par produit et par site, trie par urgence puis par designation
+        Stock par produit et par site, trié par urgence puis par désignation
       </caption>
       <thead>
         <tr class="border-b border-ardoise-200 bg-ardoise-50 text-left">
           <th scope="col" class="px-4 py-3 font-semibold">Produit</th>
           <th scope="col" class="px-4 py-3 font-semibold">Site</th>
-          <th scope="col" class="px-4 py-3 text-right font-semibold">Quantite</th>
+          <th scope="col" class="px-4 py-3 text-right font-semibold">Quantité</th>
           <th scope="col" class="px-4 py-3 text-right font-semibold">Seuil</th>
-          <th scope="col" class="px-4 py-3 font-semibold">Etat</th>
+          <th scope="col" class="px-4 py-3 font-semibold">État</th>
           <th scope="col" class="px-4 py-3 font-semibold">Dernier mouvement</th>
           <th scope="col" class="px-4 py-3"><span class="sr-only">Action</span></th>
         </tr>
@@ -55,7 +55,7 @@ function enDateCourte(iso: string): string {
 
         <tr v-else-if="lignes.length === 0">
           <td colspan="7" class="px-4 py-8 text-center text-ardoise-500">
-            Aucun produit ne correspond a ces filtres.
+            Aucun produit ne correspond à ces filtres.
           </td>
         </tr>
 

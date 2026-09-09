@@ -30,16 +30,16 @@ function enDateCourte(iso: string): string {
     <h3 class="mb-2 font-semibold">Derniers mouvements</h3>
 
     <p v-if="!mouvements.length" class="text-sm text-ardoise-500">
-      Ce stock n a jamais bouge depuis son enregistrement.
+      Ce stock n'a jamais bougé depuis son enregistrement.
     </p>
 
     <table v-else class="w-full border-collapse text-sm">
-      <caption class="sr-only">Mouvements du plus recent au plus ancien</caption>
+      <caption class="sr-only">Mouvements du plus récent au plus ancien</caption>
       <thead>
         <tr class="border-b border-ardoise-100 text-left text-xs text-ardoise-500">
           <th scope="col" class="pb-1 font-medium">Date</th>
           <th scope="col" class="pb-1 font-medium">Sens</th>
-          <th scope="col" class="pb-1 text-right font-medium">Quantite</th>
+          <th scope="col" class="pb-1 text-right font-medium">Quantité</th>
         </tr>
       </thead>
       <tbody>
@@ -50,7 +50,7 @@ function enDateCourte(iso: string): string {
             </td>
             <td class="pt-2 align-top">
               <span :class="m.sens === 'entree' ? 'text-vert-700' : 'text-ardoise-900'">
-                {{ m.sens === 'entree' ? 'Entree' : 'Sortie' }}
+                {{ m.sens === 'entree' ? 'Entrée' : 'Sortie' }}
               </span>
             </td>
             <td

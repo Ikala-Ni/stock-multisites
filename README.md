@@ -1,7 +1,7 @@
 # Suivi de stock multisites
 
-Un outil interne de consultation du stock, en DEUX ecrans qui ne s'adressent pas
-aux memes gens.
+Un outil interne de consultation du stock, en deux ecrans qui ne s'adressent pas
+aux memes gens, plus une page qui explique le projet a un lecteur non technique.
 
 **Le suivi du stock** est dense : une ligne par produit et par site, un etat, un
 tri par urgence, une demande de reapprovisionnement. Il est fait pour quelqu'un
@@ -52,7 +52,8 @@ app/
   components/    EtiquetteEtat, VignetteProduit, BarreDeFiltres,
                  TableauReferences, PanneauDetail, HistoriqueMouvements,
                  CarteProduit
-  pages/         index.vue (le stock) et produits.vue (le catalogue)
+  pages/         index.vue (le stock), produits.vue (le catalogue),
+                 a-propos.vue (la page pour un lecteur non technique)
 server/
   api/           references.get.ts, catalogue.get.ts, sites.get.ts,
                  reappro.post.ts
@@ -93,6 +94,30 @@ prend la couleur du texte, donc il fonctionne en theme clair comme en sombre.
 `VignetteProduit.vue` est la seule porte : le jour ou de vraies photos existent, on
 y remplace le SVG par une balise `<img loading="lazy">` avec ses dimensions, et
 aucune page n'a a le savoir.
+
+**L'interface est ecrite en francais correct, le code ne l'est pas.** Les
+commentaires et les identifiants restent sans accents - c'est une habitude de
+code, et un identifiant accentue est une mauvaise idee de toute facon. Mais un
+ecran est lu par des gens : "Quantite", "Etat", "Filet paragrele" ou "ce qu il
+fait" affiches a l'ecran sont des fautes d'orthographe, pas un choix technique.
+La frontiere passe entre ce que la MACHINE lit et ce qu'une PERSONNE lit, et pas
+ailleurs.
+
+*Corrige le 9 septembre, en trois passes : 32 textes d'interface, 16 apostrophes
+manquantes, puis 35 textes dans les donnees de demonstration - les noms de
+produits et leurs descriptions, qui sont les textes les plus lus de
+l'application et que les deux premieres passes avaient rates.* Les identifiants
+n'ont pas bouge, et la recherche continue de fonctionner parce qu'elle passe par
+`aPlat()`, qui enleve les accents avant de comparer : "paragrele" trouve "Filet paragrele" aussi bien
+que "paragrele".
+
+**Une page "A propos", pour quelqu'un qui n'est pas developpeur.** Une
+application interne n'en aurait pas ; celle-ci est une demonstration, et la page
+le dit des sa premiere ligne plutot que de laisser croire a une confusion. Sa
+regle d'ecriture : on part de ce qui SE VOIT a l'ecran et on remonte vers
+l'outil. "Quand vous cochez un filtre, le tableau se met a jour sans que la page
+se recharge" se comprend sans rien savoir ; "Vue est un framework reactif" ne se
+comprend que si on sait deja. Le nom de l'outil vient apres, jamais avant.
 
 **Le filtrage se fait sur le serveur, pas dans le navigateur.** Sur dix-huit
 lignes, personne ne verrait la difference. Mais un stock reel se compte en
@@ -188,6 +213,7 @@ trois fois plus fragile.
 | `server/api/reappro.post.ts` | Recoit une demande de reapprovisionnement, demande a la regle si elle est acceptable, rend un numero ou un refus motive. |
 | `app/pages/index.vue` | L'ecran de stock. Il tient les filtres et la ligne ouverte, et rien d'autre. |
 | `app/pages/produits.vue` | Le catalogue. Son existence en tant que fichier suffit a creer l'adresse /produits. |
+| `app/pages/a-propos.vue` | Ce que l'application utilise et pourquoi, ecrit pour quelqu'un qui n'est pas developpeur. |
 | `app/components/BarreDeFiltres.vue` | Les quatre champs de filtre et le compteur de resultats. Ne filtre rien lui-meme. |
 | `app/components/TableauReferences.vue` | Le tableau. Affiche, et previent la page quand on ouvre une ligne. |
 | `app/components/PanneauDetail.vue` | La fiche et le formulaire. Le seul endroit qui ecrit au lieu de lire. |

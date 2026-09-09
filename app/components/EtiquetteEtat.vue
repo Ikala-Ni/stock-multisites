@@ -32,7 +32,7 @@ const APPARENCE: Record<EtatStock, { mot: string; classes: string; forme: 'carre
     forme: 'carre',
   },
   'a-commander': {
-    mot: 'A commander',
+    mot: 'À commander',
     classes: 'bg-ambre-50 text-ambre-700 border-ambre-700',
     forme: 'triangle',
   },

@@ -67,7 +67,7 @@ async function envoyer() {
   } catch (e: unknown) {
     // L'erreur renvoyee par le serveur porte son statusMessage. On l'affiche.
     const message = (e as { statusMessage?: string })?.statusMessage
-    erreur.value = message || "La demande n'a pas pu etre envoyee. Reessaie dans un instant."
+    erreur.value = message || "La demande n'a pas pu être envoyée. Réessaie dans un instant."
   } finally {
     // finally : quoi qu'il arrive, le bouton se rallume. S'il etait remis dans
     // le try seulement, une erreur laisserait le formulaire bloque pour de bon.
@@ -106,11 +106,11 @@ async function envoyer() {
         <dd class="font-semibold tabular-nums">{{ quantiteEcrite(ligne.quantite, ligne.produit.unite) }}</dd>
       </div>
       <div>
-        <dt class="text-ardoise-500">Seuil d alerte</dt>
+        <dt class="text-ardoise-500">Seuil d'alerte</dt>
         <dd class="font-semibold tabular-nums">{{ ligne.seuil }}</dd>
       </div>
       <div>
-        <dt class="text-ardoise-500">Etat</dt>
+        <dt class="text-ardoise-500">État</dt>
         <dd class="mt-0.5"><EtiquetteEtat :etat="ligne.etat" /></dd>
       </div>
       <div>
@@ -139,11 +139,11 @@ async function envoyer() {
     </div>
 
     <form class="border-t border-ardoise-100 pt-4" @submit.prevent="envoyer">
-      <h3 class="mb-3 font-semibold">Demander un reapprovisionnement</h3>
+      <h3 class="mb-3 font-semibold">Demander un réapprovisionnement</h3>
 
       <div class="mb-3">
         <label for="champ-quantite" class="mb-1 block text-sm font-medium">
-          Quantite en {{ auPluriel(ligne.produit.unite, 2) }}
+          Quantité en {{ auPluriel(ligne.produit.unite, 2) }}
         </label>
         <input
           id="champ-quantite"
@@ -165,7 +165,7 @@ async function envoyer() {
           v-model="commentaire"
           rows="2"
           class="w-full rounded-md border border-ardoise-200 px-3 py-2 text-sm"
-          placeholder="Urgence, date souhaitee, transfert depuis un autre site..."
+          placeholder="Urgence, date souhaitée, transfert depuis un autre site..."
         />
       </div>
 
@@ -183,7 +183,7 @@ async function envoyer() {
            a corriger. -->
       <p v-if="succes" role="status" class="mt-4 rounded-md border border-vert-700 bg-vert-50 p-3 text-sm text-vert-700">
         {{ succes.message }}
-        <span class="mt-1 block font-semibold">Numero de demande : {{ succes.numero }}</span>
+        <span class="mt-1 block font-semibold">Numéro de demande : {{ succes.numero }}</span>
       </p>
 
       <p v-if="erreur" role="alert" class="mt-4 rounded-md border border-brique-700 bg-brique-50 p-3 text-sm text-brique-700">

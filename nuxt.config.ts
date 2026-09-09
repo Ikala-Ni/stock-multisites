@@ -35,7 +35,7 @@ export default defineNuxtConfig({
         {
           name: 'description',
           content:
-            "Outil interne de consultation du stock d'emballages reparti sur plusieurs sites.",
+            "Outil interne de consultation du stock d'emballages réparti sur plusieurs sites.",
         },
       ],
     },

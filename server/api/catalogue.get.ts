@@ -9,17 +9,18 @@
 // formes de reponse - servir la seconde depuis la premiere obligerait la page a
 // regrouper elle-meme, donc a refaire du metier dans le navigateur.
 
-import { PRODUITS } from '~~/server/donnees/catalogue'
-import { SITES, STOCKS } from '~~/server/donnees/stocks'
+import { lireDonnees } from '~~/server/depot'
 import { aPlat, construireCatalogue } from '~~/shared/regles'
 import type { Famille, FicheCatalogue } from '~~/shared/types/stock'
 
-export default defineEventHandler((event): FicheCatalogue[] => {
+export default defineEventHandler(async (event): Promise<FicheCatalogue[]> => {
   const q = getQuery(event)
   const famille = typeof q.famille === 'string' ? (q.famille as Famille) : ''
   const recherche = typeof q.recherche === 'string' ? aPlat(q.recherche) : ''
 
-  return construireCatalogue(PRODUITS, STOCKS, SITES)
+  const { produits, sites, stocks } = await lireDonnees()
+
+  return construireCatalogue(produits, stocks, sites)
     .filter((f) => (famille ? f.produit.famille === famille : true))
     .filter((f) =>
       recherche

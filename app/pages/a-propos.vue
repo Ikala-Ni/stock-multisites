@@ -87,7 +87,7 @@ const CHOIX = [
       "Le tri et le filtrage sont faits avant l'envoi, pas dans votre navigateur. Sur dix-huit lignes cela ne se voit pas ; sur un stock réel de plusieurs milliers de références, c'est la différence entre un écran qui s'ouvre tout de suite et un écran qui rame.",
   },
   {
-    titre: 'Vérifié deux fois, et ce n est pas un doublon',
+    titre: "Vérifié deux fois, et ce n'est pas un doublon",
     texte:
       "Le formulaire vous prévient tout de suite si la quantité est mauvaise, ce qui est confortable. Le serveur revérifie, ce qui est la seule vérification qui protège vraiment : tout ce qui se passe dans un navigateur peut être contourné.",
   },
@@ -105,14 +105,14 @@ const CHOIX = [
       </p>
       <p class="mt-2 text-ardoise-700">
         Elle a été écrite pour répondre à une annonce de développeuse frontend web, avec les
-        outils que cette annonce demandait, et sur un sujet proche du métier de l entreprise.
-        Cette page explique ce qu elle utilise et pourquoi, sans supposer que vous soyez
+        outils que cette annonce demandait, et sur un sujet proche du métier de l'entreprise.
+        Cette page explique ce qu'elle utilise et pourquoi, sans supposer que vous soyez
         développeur.
       </p>
     </header>
 
     <section class="mb-10">
-      <h2 class="mb-1 text-lg font-semibold">Ce que fait l application</h2>
+      <h2 class="mb-1 text-lg font-semibold">Ce que fait l'application</h2>
       <p class="mb-4 text-sm text-ardoise-500">En deux écrans</p>
 
       <div class="grid gap-4 sm:grid-cols-2">
@@ -120,7 +120,7 @@ const CHOIX = [
           <h3 class="mb-1 font-semibold">Suivi du stock</h3>
           <p class="text-sm text-ardoise-700">
             Ce que chaque site détient, avec un état par ligne et les urgences en premier. On y
-            demande un réapprovisionnement en deux clics. Il est fait pour quelqu un qui connaît
+            demande un réapprovisionnement en deux clics. Il est fait pour quelqu'un qui connaît
             les produits.
           </p>
         </article>
@@ -129,7 +129,7 @@ const CHOIX = [
           <h3 class="mb-1 font-semibold">Les produits</h3>
           <p class="text-sm text-ardoise-700">
             Un catalogue qui dit à quoi chaque produit sert, en une phrase et sans jargon. Il est
-            fait pour quelqu un qui vient d arriver et pour qui « Voile d hivernage 17 g » ne veut
+            fait pour quelqu'un qui vient d'arriver et pour qui « Voile d'hivernage 17 g » ne veut
             rien dire.
           </p>
         </article>
@@ -137,9 +137,9 @@ const CHOIX = [
     </section>
 
     <section class="mb-10">
-      <h2 class="mb-1 text-lg font-semibold">Les outils, et ce qu ils font ici</h2>
+      <h2 class="mb-1 text-lg font-semibold">Les outils, et ce qu'ils font ici</h2>
       <p class="mb-4 text-sm text-ardoise-500">
-        Chacun résout un problème précis. Le nom vient après ce qu il fait.
+        Chacun résout un problème précis. Le nom vient après ce qu'il fait.
       </p>
 
       <dl class="divide-y divide-ardoise-200 rounded-lg border border-ardoise-200 bg-white">
@@ -154,9 +154,9 @@ const CHOIX = [
     </section>
 
     <section class="mb-10">
-      <h2 class="mb-1 text-lg font-semibold">Les choix qui se voient à l usage</h2>
+      <h2 class="mb-1 text-lg font-semibold">Les choix qui se voient à l'usage</h2>
       <p class="mb-4 text-sm text-ardoise-500">
-        Ce ne sont pas des détails techniques : chacun change ce que vous pouvez faire avec l outil.
+        Ce ne sont pas des détails techniques : chacun change ce que vous pouvez faire avec l'outil.
       </p>
 
       <div class="grid gap-3">
@@ -177,19 +177,19 @@ const CHOIX = [
 
       <div class="rounded-lg border border-ardoise-200 bg-white p-5">
         <p class="mb-3 text-sm text-ardoise-700">
-          Trente-trois contrôles rejouent les règles de l application, et un contrôle
+          Trente-trois contrôles rejouent les règles de l'application, et un contrôle
           supplémentaire vérifie que la forme des données est respectée partout. Les deux se
           relancent automatiquement à chaque modification, sur une machine vierge.
         </p>
         <p class="mb-3 text-sm text-ardoise-700">
-          Ces contrôles ont été vus échouer avant d être livrés : on a cassé une règle
-          volontairement pour vérifier qu ils la rattrapaient. Une série de contrôles qu on n a
+          Ces contrôles ont été vus échouer avant d'être livrés : on a cassé une règle
+          volontairement pour vérifier qu'ils la rattrapaient. Une série de contrôles qu'on n'a
           jamais vue échouer ne prouve rien.
         </p>
         <p class="text-sm text-ardoise-700">
-          Le code est commenté en français, et chaque fichier explique ce qu il fait et pourquoi
-          il est écrit ainsi. L objectif est qu une autre personne puisse le reprendre sans avoir
-          à joindre celle qui l a écrit.
+          Le code est commenté en français, et chaque fichier explique ce qu'il fait et pourquoi
+          il est écrit ainsi. L'objectif est qu'une autre personne puisse le reprendre sans avoir
+          à joindre celle qui l'a écrit.
         </p>
       </div>
     </section>

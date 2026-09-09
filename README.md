@@ -95,13 +95,21 @@ prend la couleur du texte, donc il fonctionne en theme clair comme en sombre.
 y remplace le SVG par une balise `<img loading="lazy">` avec ses dimensions, et
 aucune page n'a a le savoir.
 
-**L'interface est ecrite en francais accentue, le code ne l'est pas.** Les
+**L'interface est ecrite en francais correct, le code ne l'est pas.** Les
 commentaires et les identifiants restent sans accents - c'est une habitude de
 code, et un identifiant accentue est une mauvaise idee de toute facon. Mais un
-ecran est lu par des gens : "Quantite" et "Etat" affiches a l'ecran sont des
-fautes, pas un choix technique. La frontiere passe entre ce que la machine lit et
-ce qu'une personne lit, et pas ailleurs. *Corrige le 9 septembre : toute
-l'interface avait ete ecrite sans accents par habitude, sur 32 textes.*
+ecran est lu par des gens : "Quantite", "Etat", "Filet paragrele" ou "ce qu il
+fait" affiches a l'ecran sont des fautes d'orthographe, pas un choix technique.
+La frontiere passe entre ce que la MACHINE lit et ce qu'une PERSONNE lit, et pas
+ailleurs.
+
+*Corrige le 9 septembre, en trois passes : 32 textes d'interface, 16 apostrophes
+manquantes, puis 35 textes dans les donnees de demonstration - les noms de
+produits et leurs descriptions, qui sont les textes les plus lus de
+l'application et que les deux premieres passes avaient rates.* Les identifiants
+n'ont pas bouge, et la recherche continue de fonctionner parce qu'elle passe par
+`aPlat()`, qui enleve les accents avant de comparer : "paragrele" trouve "Filet paragrele" aussi bien
+que "paragrele".
 
 **Une page "A propos", pour quelqu'un qui n'est pas developpeur.** Une
 application interne n'en aurait pas ; celle-ci est une demonstration, et la page

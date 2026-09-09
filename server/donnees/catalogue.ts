@@ -22,7 +22,7 @@ export const PRODUITS: Produit[] = [
     famille: 'emballage',
     visuel: 'cagette',
     description:
-      "La caisse en bois la plus courante du site. Elle part chez les producteurs de fruits et revient vide pour etre reutilisee.",
+      "La caisse en bois la plus courante du site. Elle part chez les producteurs de fruits et revient vide pour être réutilisée.",
     unite: 'palette',
     dimensions: '30 x 40 x 12 cm',
     conditionnement: '160 cagettes par palette',
@@ -34,7 +34,7 @@ export const PRODUITS: Produit[] = [
     famille: 'emballage',
     visuel: 'cagette',
     description:
-      "Le grand format, pour les legumes lourds et les melons. Meme bois que la 30 x 40, deux fois le volume.",
+      "Le grand format, pour les légumes lourds et les melons. Même bois que la 30 x 40, deux fois le volume.",
     unite: 'palette',
     dimensions: '40 x 60 x 15 cm',
     conditionnement: '90 cagettes par palette',
@@ -46,7 +46,7 @@ export const PRODUITS: Produit[] = [
     famille: 'emballage',
     visuel: 'barquette',
     description:
-      "La petite barquette de vente au detail, celle qu'on trouve en rayon avec des fraises ou des tomates cerises dedans.",
+      "La petite barquette de vente au détail, celle qu'on trouve en rayon avec des fraises ou des tomates cerises dedans.",
     unite: 'carton',
     dimensions: '14 x 11 x 5 cm',
     conditionnement: '900 barquettes par carton',
@@ -58,7 +58,7 @@ export const PRODUITS: Produit[] = [
     famille: 'emballage',
     visuel: 'barquette',
     description:
-      "Le format au-dessus de la 250 g, meme carton et meme usage. C'est le poids du contenu qui change, pas la matiere.",
+      "Le format au-dessus de la 250 g, même carton et même usage. C'est le poids du contenu qui change, pas la matière.",
     unite: 'carton',
     dimensions: '18 x 13 x 6 cm',
     conditionnement: '600 barquettes par carton',
@@ -70,7 +70,7 @@ export const PRODUITS: Produit[] = [
     famille: 'emballage',
     visuel: 'plateau',
     description:
-      "Le bac plastique reutilisable qui circule entre les sites. Il se lave, s'empile vide et sert des annees, contrairement au carton.",
+      "Le bac plastique réutilisable qui circule entre les sites. Il se lave, s'empile vide et sert des années, contrairement au carton.",
     unite: 'palette',
     dimensions: '60 x 40 x 17 cm',
     conditionnement: '72 plateaux par palette',
@@ -78,11 +78,11 @@ export const PRODUITS: Produit[] = [
   },
   {
     id: 'FET-23',
-    designation: 'Film etirable 23 microns',
+    designation: 'Film étirable 23 microns',
     famille: 'emballage',
     visuel: 'bobine-film',
     description:
-      "Le film transparent qu'on enroule autour d'une palette pour que rien ne bouge pendant le transport. Le chiffre est son epaisseur.",
+      "Le film transparent qu'on enroule autour d'une palette pour que rien ne bouge pendant le transport. Le chiffre est son épaisseur.",
     unite: 'carton',
     dimensions: 'largeur 50 cm, 300 m par bobine',
     conditionnement: '6 bobines par carton',
@@ -90,11 +90,11 @@ export const PRODUITS: Produit[] = [
   },
   {
     id: 'FET-17',
-    designation: 'Film etirable 17 microns',
+    designation: 'Film étirable 17 microns',
     famille: 'emballage',
     visuel: 'bobine-film',
     description:
-      "Le meme film, plus fin. On l'utilise pour les palettes legeres : moins de matiere, mais il tient moins bien une charge lourde.",
+      "Le même film, plus fin. On l'utilise pour les palettes légères : moins de matière, mais il tient moins bien une charge lourde.",
     unite: 'carton',
     dimensions: 'largeur 50 cm, 300 m par bobine',
     conditionnement: '6 bobines par carton',
@@ -102,11 +102,11 @@ export const PRODUITS: Produit[] = [
   },
   {
     id: 'ETI-ADH',
-    designation: 'Etiquette adhesive 40 x 25',
+    designation: 'Étiquette adhésive 40 x 25',
     famille: 'emballage',
     visuel: 'bobine-etiquette',
     description:
-      "L'etiquette blanche qu'on imprime au moment du conditionnement : origine, poids, date. Elle arrive en bobine pour l'imprimante.",
+      "L'étiquette blanche qu'on imprime au moment du conditionnement : origine, poids, date. Elle arrive en bobine pour l'imprimante.",
     unite: 'bobine',
     dimensions: '40 x 25 mm, 2000 par bobine',
     conditionnement: '1 bobine',
@@ -118,7 +118,7 @@ export const PRODUITS: Produit[] = [
     famille: 'emballage',
     visuel: 'barquette',
     description:
-      "Le sac papier a fond plat pour la vente en vrac, pommes de terre ou oignons. Reference gardee au catalogue, mais plus aucun site n'en detient depuis la fin de campagne.",
+      "Le sac papier à fond plat pour la vente en vrac, pommes de terre ou oignons. Référence gardée au catalogue, mais plus aucun site n'en détient depuis la fin de campagne.",
     unite: 'carton',
     dimensions: '22 x 12 x 34 cm',
     conditionnement: '500 sacs par carton',
@@ -126,11 +126,11 @@ export const PRODUITS: Produit[] = [
   },
   {
     id: 'FIL-PG',
-    designation: 'Filet paragrele 8 m',
+    designation: 'Filet paragrêle 8 m',
     famille: 'protection',
     visuel: 'filet',
     description:
-      "Le filet qu'on tend au-dessus des vergers pour que la grele n'abime pas les fruits. On le pose au printemps et il reste la saison.",
+      "Le filet qu'on tend au-dessus des vergers pour que la grêle n'abîme pas les fruits. On le pose au printemps et il reste la saison.",
     unite: 'rouleau',
     dimensions: 'largeur 8 m, 100 m par rouleau',
     conditionnement: '1 rouleau',
@@ -138,11 +138,11 @@ export const PRODUITS: Produit[] = [
   },
   {
     id: 'FIL-OMB',
-    designation: 'Filet d ombrage 40 pour cent',
+    designation: "Filet d'ombrage 40 %",
     famille: 'protection',
     visuel: 'filet',
     description:
-      "Un filet qui laisse passer 60 pour cent de la lumiere et arrete le reste. Il evite que le soleil brule les cultures en plein ete.",
+      "Un filet qui laisse passer 60 % de la lumière et arrête le reste. Il évite que le soleil brûle les cultures en plein été.",
     unite: 'rouleau',
     dimensions: 'largeur 4 m, 100 m par rouleau',
     conditionnement: '1 rouleau',
@@ -150,11 +150,11 @@ export const PRODUITS: Produit[] = [
   },
   {
     id: 'FIL-ANT',
-    designation: 'Filet anti insectes 50 mailles',
+    designation: 'Filet anti-insectes 50 mailles',
     famille: 'protection',
     visuel: 'filet',
     description:
-      "Un filet a mailles tres serrees qui empeche les insectes d'atteindre la culture. Plus le nombre de mailles est eleve, plus c'est fin.",
+      "Un filet à mailles très serrées qui empêche les insectes d'atteindre la culture. Plus le nombre de mailles est élevé, plus c'est fin.",
     unite: 'rouleau',
     dimensions: 'largeur 3 m, 100 m par rouleau',
     conditionnement: '1 rouleau',
@@ -162,11 +162,11 @@ export const PRODUITS: Produit[] = [
   },
   {
     id: 'VOI-17',
-    designation: 'Voile d hivernage 17 g',
+    designation: "Voile d'hivernage 17 g",
     famille: 'protection',
     visuel: 'voile',
     description:
-      "Un voile blanc tres leger qu'on pose sur les cultures avant une nuit de gel. Le chiffre est son poids au metre carre : plus il est eleve, plus il protege.",
+      "Un voile blanc très léger qu'on pose sur les cultures avant une nuit de gel. Le chiffre est son poids au mètre carré : plus il est élevé, plus il protège.",
     unite: 'rouleau',
     dimensions: 'largeur 6 m, 100 m par rouleau',
     conditionnement: '1 rouleau',
@@ -174,11 +174,11 @@ export const PRODUITS: Produit[] = [
   },
   {
     id: 'VOI-30',
-    designation: 'Voile d hivernage 30 g',
+    designation: "Voile d'hivernage 30 g",
     famille: 'protection',
     visuel: 'voile',
     description:
-      "Le voile epais, pour les gelees severes. Il protege mieux mais laisse passer moins de lumiere, donc on ne le laisse pas des semaines.",
+      "Le voile épais, pour les gelées sévères. Il protège mieux mais laisse passer moins de lumière, donc on ne le laisse pas des semaines.",
     unite: 'rouleau',
     dimensions: 'largeur 6 m, 50 m par rouleau',
     conditionnement: '1 rouleau',
@@ -198,13 +198,13 @@ export const PRODUITS: Produit[] = [
   },
   {
     id: 'CER-AUT',
-    designation: 'Cercleuse automatique, pieces d usure',
+    designation: "Cercleuse automatique, pièces d'usure",
     famille: 'conditionnement',
     visuel: 'piece-machine',
     description:
-      "Le lot de pieces qui s'usent sur la machine a cercler : galets, lame, resistance de soudure. On le garde en stock pour ne pas arreter la ligne.",
+      "Le lot de pièces qui s'usent sur la machine à cercler : galets, lame, résistance de soudure. On le garde en stock pour ne pas arrêter la ligne.",
     unite: 'lot',
-    dimensions: 'lot de 8 pieces',
+    dimensions: 'lot de 8 pièces',
     conditionnement: '1 lot',
     fournisseur: 'FRN-9004',
   },
@@ -214,7 +214,7 @@ export const PRODUITS: Produit[] = [
     famille: 'conditionnement',
     visuel: 'piece-machine',
     description:
-      "Les courroies de la machine qui trie les fruits par taille. Elles se remplacent une a deux fois par saison selon les heures de marche.",
+      "Les courroies de la machine qui trie les fruits par taille. Elles se remplacent une à deux fois par saison selon les heures de marche.",
     unite: 'lot',
     dimensions: 'jeu de 4 courroies',
     conditionnement: '1 lot',
@@ -222,11 +222,11 @@ export const PRODUITS: Produit[] = [
   },
   {
     id: 'ENS-MAC',
-    designation: 'Ensacheuse, machoires de soudure',
+    designation: 'Ensacheuse, mâchoires de soudure',
     famille: 'conditionnement',
     visuel: 'piece-machine',
     description:
-      "Les machoires chauffantes qui ferment les sachets. Quand la soudure ne tient plus, c'est presque toujours elles qu'il faut changer.",
+      "Les mâchoires chauffantes qui ferment les sachets. Quand la soudure ne tient plus, c'est presque toujours elles qu'il faut changer.",
     unite: 'lot',
     dimensions: 'paire',
     conditionnement: '1 lot',

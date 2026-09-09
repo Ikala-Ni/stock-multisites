@@ -1,0 +1,62 @@
+# LES VERIFICATIONS AUTOMATIQUES.
+#
+# Ce fichier fait lancer par une machine ce qu'on lancerait a la main : les
+# types, puis les tests. Il tourne a chaque poussee sur main et sur chaque
+# pull request.
+#
+# POURQUOI UNE MACHINE PLUTOT QUE MOI.
+#
+# `npm run tester` et `npm run verifier` marchent tres bien, mais il faut y
+# penser. Un soir de fatigue on pousse sans les lancer, et le depot contient une
+# regle cassee que personne ne verra avant la prochaine fois ou quelqu'un pensera
+# a la commande. C'est la meme regle que je m'applique ailleurs : une
+# verification qu'il faut penser a lancer finit par ne pas etre lancee.
+#
+# CE QU'ELLE ATTRAPE ET QUE JE NE PEUX PAS ATTRAPER.
+#
+# Elle part d'une machine vide qui vient de cloner le depot. Elle attrape donc le
+# "ca marche chez moi" : un paquet installe sur mon ordinateur mais absent du
+# package.json, un fichier cree et oublie au commit, une dependance a quelque
+# chose de propre a ma machine. Chez moi tout va bien, chez la personne suivante
+# rien ne demarre.
+
+name: Verifications
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verifier:
+    name: Types et tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # La version de Node est lue dans .nvmrc et nulle part ailleurs.
+          # Ce meme fichier est lu par Netlify au deploiement : une seule ligne
+          # gouverne la machine de verification et celle de mise en ligne, donc
+          # les deux ne peuvent pas diverger.
+          node-version-file: '.nvmrc'
+          # Garde les paquets d'une execution a l'autre : sans ce cache, chaque
+          # verification retelecharge 600 paquets.
+          cache: 'npm'
+
+      # npm ci et non npm install : il installe EXACTEMENT ce que dit
+      # package-lock.json, sans jamais le modifier. C'est ce qui garantit que la
+      # machine teste les memes versions que celles installees en local.
+      - name: Installer les dependances
+        run: npm ci
+
+      # Les deux verifications tournent l'une apres l'autre, et la premiere qui
+      # echoue arrete tout. On commence par les types : ils sont plus rapides, et
+      # une erreur de type rend souvent les tests incomprehensibles.
+      - name: Verifier les types
+        run: npm run verifier
+
+      - name: Lancer les tests
+        run: npm run tester

@@ -15,8 +15,23 @@
 # variable a poser. Ce fichier ne fait que nommer ce qu'il produit deja.
 
 [build]
-  # La commande, la meme qu'en local.
-  command = "npm run build"
+  # LES VERIFICATIONS CONDITIONNENT LA MISE EN LIGNE.
+  #
+  # Le "&&" veut dire "et seulement si ce qui precede a reussi". Si un type est
+  # faux ou si un test echoue, la construction s'arrete ici : Netlify ne deploie
+  # rien, et la version en ligne reste la derniere bonne.
+  #
+  # Pourquoi le refaire alors que GitHub verifie deja. Parce que les deux etaient
+  # INDEPENDANTES : GitHub verifiait de son cote, Netlify deployait du sien, et
+  # rien ne les reliait. Des tests rouges sur GitHub et un site casse en ligne
+  # pouvaient tres bien coexister. Ce n'etait pas une chaine, c'etaient deux
+  # choses declenchees en parallele.
+  #
+  # La verification de GitHub garde son role : elle repond sur la pull request,
+  # AVANT la fusion, donc avant qu'un probleme approche de la production. Celle-ci
+  # est le dernier verrou, juste avant la mise en ligne. Les deux ne se font pas
+  # double emploi, elles ne s'executent pas au meme moment de la journee.
+  command = "npm run verifier && npm run tester && npm run build"
 
   # Ce que le navigateur telecharge : les pages et les fichiers statiques.
   # Le SERVEUR, lui, n'est pas ici : Nuxt le depose dans .netlify/

@@ -119,6 +119,16 @@ l'outil. "Quand vous cochez un filtre, le tableau se met a jour sans que la page
 se recharge" se comprend sans rien savoir ; "Vue est un framework reactif" ne se
 comprend que si on sait deja. Le nom de l'outil vient apres, jamais avant.
 
+**Les verifications conditionnent la mise en ligne.** La commande de
+construction de Netlify est `npm run verifier && npm run tester && npm run
+build` : si un type est faux ou si un test echoue, la construction s'arrete et
+la version en ligne reste la derniere bonne. Sans ce `&&`, GitHub verifiait de
+son cote et Netlify deployait du sien, sans que rien ne les relie - des tests
+rouges et un site casse en ligne pouvaient coexister. Ce n'etait pas une chaine,
+c'etaient deux choses declenchees en parallele. La verification de GitHub garde
+son role : elle repond sur la pull request, donc AVANT la fusion ; celle-ci est
+le dernier verrou, juste avant la mise en ligne.
+
 **Le filtrage se fait sur le serveur, pas dans le navigateur.** Sur dix-huit
 lignes, personne ne verrait la difference. Mais un stock reel se compte en
 milliers de references, et filtrer cote page voudrait dire telecharger toute la

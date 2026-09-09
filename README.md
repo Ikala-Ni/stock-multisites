@@ -34,7 +34,20 @@ npm run tester     # la suite de tests
 npm run verifier   # verification des types sur tout le projet
 ```
 
-Node 20 ou plus recent.
+Node 20 ou plus recent. **Ca suffit** : sans rien d'autre, l'application tourne
+sur les donnees ecrites en TypeScript.
+
+### Avec une vraie base de donnees
+
+```bash
+cp .env.exemple .env
+npm run bd:demarrer   # docker compose up -d
+npm run bd:semer      # remplit la base depuis les fichiers TypeScript
+npm run dev
+```
+
+`GET /api/source` dit laquelle des deux sources a repondu. Les autres commandes :
+`bd:arreter`, et `bd:remettre-a-neuf` pour repartir d'une base vide.
 
 ## La pile, et pourquoi elle est faite comme ca
 
@@ -45,7 +58,9 @@ Node 20 ou plus recent.
 | TypeScript | Les types sont dans `shared/`, lus par le serveur ET par l'interface. Ajouter un champ signale tous les endroits qui ne le connaissent pas encore. |
 | Tailwind 4 | Les couleurs du projet sont declarees une fois dans `app/assets/css/main.css`. Pas de fichier de configuration separe depuis la version 4. |
 | Vitest | Les regles metier vivent dans `shared/regles.ts`, sans dependance a HTTP : les verifier est un appel de fonction, pas une requete a un serveur qu'il faut demarrer. |
-| Pas de base de donnees | Les donnees sont dans `server/donnees/references.ts`. Voir plus bas : c'est un choix, pas un oubli. |
+| PostgreSQL 17 | Quatre tables, des cles etrangeres et des contraintes CHECK. Le SQL est ecrit a la main : pas d'ORM sur un projet de cette taille, il cacherait justement ce qu'on cherche a montrer. |
+| Docker Compose | La base demarre en une commande, dans une version ecrite dans le projet. Meme idee que `.nvmrc` : la version fait partie du depot, pas de la machine. |
+| `pg` | La seule dependance ajoutee cote execution. Un pool de connexions, quatre requetes. |
 
 ```
 app/
@@ -56,9 +71,13 @@ app/
                  a-propos.vue (la page pour un lecteur non technique)
 server/
   api/           references.get.ts, catalogue.get.ts, sites.get.ts,
-                 reappro.post.ts
+                 source.get.ts, reappro.post.ts
+  depot/         la seule porte vers les donnees : PostgreSQL si une base
+                 est configuree, les fichiers sinon
   donnees/       catalogue.ts (les produits) et stocks.ts (ce que chaque
-                 site detient) - deux fichiers, comme deux tables
+                 site detient) - la SOURCE, meme quand la base tourne
+db/              01-schema.sql, execute par Docker au premier demarrage
+scripts/         semer.ts, remplit la base depuis les fichiers TypeScript
 shared/
   types/         les types partages entre le serveur et l'interface
   regles.ts      les regles metier, hors de toute route HTTP
@@ -67,6 +86,45 @@ tests/           22 cas sur les regles, sans demarrer de serveur
 ```
 
 ## Ce que j'ai decide, et pourquoi
+
+**Les donnees viennent de PostgreSQL quand il y en a un, des fichiers sinon.**
+Le choix se fait sur la seule presence de `DATABASE_URL` - pas de variable
+"MODE=base" ni de drapeau a poser : la question n'est pas "que veux-tu ?", elle
+est "y a-t-il une base ?", et l'adresse de connexion y repond deja. Trois
+situations imposent les deux sources : sur ma machine je veux la vraie base ;
+quelqu'un qui clone le depot doit pouvoir lancer `npm run dev` sans installer
+Docker, parce qu'un projet qu'on ne peut pas demarrer en une commande est un
+projet que personne n'ouvre ; et le site en ligne chez Netlify n'a aucune base a
+joindre, et n'en aura pas - une base de demonstration hebergee coute de l'argent
+tous les mois pour montrer des donnees inventees.
+
+**Le repli n'est jamais silencieux.** Si la base est configuree mais ne repond
+pas, l'application repart sur les fichiers au lieu d'afficher une erreur, et
+`GET /api/source` dit toujours laquelle des deux a repondu. *Ce choix se
+discute, et il ne vaut que pour une demonstration : sur une application de
+gestion reelle, replier serait dangereux - montrer un stock perime sans le dire
+ferait prendre de mauvaises decisions, et mieux vaut un ecran en panne qu'un
+ecran qui ment.*
+
+**Le schema porte des regles que TypeScript ne peut pas porter.** Une cle
+etrangere refuse un stock dont le produit n'existe pas ; une cle primaire sur le
+couple `(produit_id, site_code)` interdit deux lignes pour le meme produit sur le
+meme site ; un `CHECK` refuse une quantite negative ou une famille inventee.
+TypeScript protege le CODE, les contraintes protegent la DONNEE - ce ne sont pas
+les memes gardes, et la donnee survit au code. Verifie en essayant : les trois
+insertions fautives sont bien refusees par la base.
+
+**Les mouvements deviennent une table.** En TypeScript ils sont un tableau range
+dans un stock, ce qui va tant qu'on les lit tous ensemble. En base, un tableau
+imbrique interdit de repondre a "toutes les sorties du mois, tous sites
+confondus" sans parcourir chaque stock. Une liste qui grandit sans limite est une
+table.
+
+**La base est remplie par un script, pas par un fichier SQL.** Un
+`02-donnees.sql` aurait marche, et Docker l'aurait execute tout seul. Mais il
+aurait recopie les dix-huit produits et leurs descriptions a cote des memes
+dix-huit produits en TypeScript, et deux copies des memes donnees divergent a la
+premiere correction. Les fichiers restent la source, la base en est remplie.
 
 **Deux tables, produits et stocks, et pas une seule.** Un produit est ce qu'on
 achete : une cagette bois 30 x 40, ses dimensions, son fournisseur, ce a quoi
@@ -236,7 +294,7 @@ trois fois plus fragile.
 
 ## La suite de tests
 
-`npm run tester` : 33 cas, moins d'une seconde et demie, aucun serveur a demarrer.
+`npm run tester` : 43 cas, moins d'une seconde, aucun serveur ni base a demarrer.
 
 Ce qui est verifie : le calcul de l'etat, y compris **au seuil exactement** - la
 regle veut qu'on commande deja, attendre d'etre en dessous c'est attendre d'etre
@@ -248,6 +306,15 @@ l'urgence d'abord ; le repli sur le code quand un site est introuvable ; la
 construction du catalogue, dont le produit que **personne ne detient**, qui reste
 au catalogue parce qu'il reste commandable ; et le refus d'une quantite nulle,
 negative, decimale, non numerique ou trop grande.
+
+**Un troisieme fichier verifie les DONNEES**, et il existe pour une raison
+precise : les garde-fous du schema SQL ne s'appliquent qu'au mode avec base.
+Sans lui, le mode "fichiers" serait moins sur que le mode "base" - on pourrait
+ajouter un stock qui pointe vers un produit inexistant, tout marcherait en local,
+et `npm run bd:semer` echouerait plus tard sans qu'on comprenne pourquoi. Ces
+tests rejouent donc les memes regles sur les donnees TypeScript : cles uniques,
+references qui existent, pas de doublon sur le couple produit et site, quantites
+positives, dates bien formees.
 
 Deux principes derriere ces cas :
 
@@ -301,10 +368,16 @@ comment une vignette est dessinee.
 `BarreDeFiltres.vue`. Attention : TypeScript ne force pas le second, c'est une
 liste d'affichage. C'est le seul endroit du projet ou un oubli passe en silence.
 
-**Brancher une vraie base de donnees.** Deux fichiers, `catalogue.ts` et
-`stocks.ts`, qui deviennent deux tables reliees par `produitId`. `joindre()` dans
-`shared/regles.ts` disparait au profit d'un JOIN, et rien d'autre ne bouge : ni
-les routes, ni les pages, ni les composants ne savent d'ou viennent les donnees.
+**Changer la source des donnees.** C'est fait, et la promesse a tenu : les
+routes passent par `server/depot/`, et ni les pages, ni les composants, ni les
+regles n'ont change d'une ligne. Pour brancher une AUTRE base, il n'y a qu'un
+fichier a ecrire a cote de `server/depot/postgres.ts`.
+
+**Ajouter une colonne en base.** La colonne dans `db/01-schema.sql`, le champ
+dans `shared/types/stock.ts`, la valeur dans le fichier de donnees, la lecture
+dans `server/depot/postgres.ts`. Puis `npm run bd:remettre-a-neuf` et
+`npm run bd:semer`. Le schema ne se rejoue qu'au premier demarrage du conteneur,
+c'est pour ca qu'il faut le recreer.
 
 ## Ce qu'il n'y a pas dedans
 
@@ -313,10 +386,17 @@ mais rien n'est enregistre de facon durable. Il n'y a ni comptes, ni droits, ni
 historique des mouvements. Ce sont les etapes suivantes, et elles demandent une
 base de donnees.
 
-Les tests couvrent les regles metier, pas l'affichage : il n'y a pas de test de
-composant ni de parcours de bout en bout. C'est assume pour cette taille de
-projet - ce sont les regles qui se cassent en silence, une page qui ne s'affiche
-plus se voit tout de suite.
+Les tests couvrent les regles metier et la coherence des donnees, pas
+l'affichage : il n'y a pas de test de composant ni de parcours de bout en bout.
+C'est assume pour cette taille de projet - ce sont les regles qui se cassent en
+silence, une page qui ne s'affiche plus se voit tout de suite.
+
+Le depot n'est pas teste automatiquement non plus : c'est de l'entree-sortie, et
+le verifier demanderait soit une base dans la chaine d'integration, soit une
+imitation qui ne prouverait rien de la vraie base. Il a ete verifie a la main sur
+quatre situations : base demarree, base arretee en cours de route, base
+relancee sans redemarrer l'application, et une modification faite directement en
+SQL qui apparait bien a l'ecran.
 
 ---
 

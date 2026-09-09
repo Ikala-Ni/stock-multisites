@@ -1,0 +1,61 @@
+# LA BASE DE DONNEES, EN UNE COMMANDE.
+#
+#   docker compose up -d     la demarre
+#   docker compose down      l'arrete, en gardant les donnees
+#   docker compose down -v   l'arrete et EFFACE tout, pour repartir a neuf
+#
+# POURQUOI DOCKER PLUTOT QU'UN POSTGRESQL INSTALLE SUR LA MACHINE.
+#
+# Parce que la version est ecrite ici. Quelqu'un qui clone ce depot obtient la
+# meme base que moi, dans la meme version, avec les memes tables deja creees,
+# sans rien installer et sans suivre un mode d'emploi. Un PostgreSQL installe a
+# la main sur chaque poste, c'est trois versions differentes au bout de six mois
+# et une soiree perdue a comprendre pourquoi une requete marche chez l'un et pas
+# chez l'autre.
+#
+# C'est la meme idee que .nvmrc pour Node : la version fait partie du projet, pas
+# de la machine.
+
+services:
+  base:
+    # Une version PRECISE, jamais "latest". Avec latest, le meme depot cloné
+    # dans six mois donnerait une autre base sans que rien ne l'ait annonce -
+    # exactement le genre d'ecart qu'on ne comprend pas quand il se produit.
+    image: postgres:17.2-alpine
+
+    container_name: stock-multisites-base
+
+    environment:
+      POSTGRES_USER: stock
+      POSTGRES_PASSWORD: stock
+      POSTGRES_DB: stock
+
+    ports:
+      # 5433 a gauche et non 5432 : si un PostgreSQL est deja installe sur la
+      # machine, il occupe le 5432 et le conteneur refuserait de demarrer avec un
+      # message peu clair. On se decale d'un port pour que les deux coexistent.
+      - '5433:5432'
+
+    volumes:
+      # Les donnees survivent a l'arret du conteneur. Sans ce volume, chaque
+      # "docker compose down" effacerait la base, et on ne s'en apercevrait qu'au
+      # redemarrage suivant.
+      - donnees:/var/lib/postgresql/data
+
+      # PostgreSQL execute les fichiers de ce dossier au TOUT PREMIER demarrage,
+      # dans l'ordre alphabetique, et jamais ensuite. C'est ce qui cree les
+      # tables sans qu'on ait a lancer quoi que ce soit a la main. Pour rejouer
+      # le schema apres l'avoir modifie : docker compose down -v, puis up.
+      - ./db:/docker-entrypoint-initdb.d:ro
+
+    # Netlify et la verification automatique ne connaissent pas cette base : ce
+    # test sert a la machine de developpement, pour que l'application sache si la
+    # base est prete plutot que d'echouer sur une connexion refusee.
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U stock -d stock']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  donnees:

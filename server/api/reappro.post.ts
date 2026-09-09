@@ -16,8 +16,7 @@
 // confort, celle-ci sert de regle. Les ecrire toutes les deux n'est pas une
 // repetition.
 
-import { PRODUITS } from '~~/server/donnees/catalogue'
-import { SITES, STOCKS } from '~~/server/donnees/stocks'
+import { lireDonnees } from '~~/server/depot'
 import { auPluriel, quantiteEcrite } from '~~/shared/pluriel'
 import { joindre, verifierQuantite } from '~~/shared/regles'
 import type { DemandeReappro, ReponseReappro } from '~~/shared/types/stock'
@@ -28,7 +27,8 @@ export default defineEventHandler(async (event): Promise<ReponseReappro> => {
   // TypeScript verifie le code, pas le reseau.
   const corps = await readBody<Partial<DemandeReappro>>(event)
 
-  const ligne = joindre(STOCKS, PRODUITS, SITES).find((l) => l.id === corps?.ligneId)
+  const { produits, sites, stocks } = await lireDonnees()
+  const ligne = joindre(stocks, produits, sites).find((l) => l.id === corps?.ligneId)
   if (!ligne) {
     // 404 et non 400 : la demande est bien formee, c'est la ligne qui n'existe
     // pas. Le code de statut fait partie de la reponse, il n'est pas decoratif :
